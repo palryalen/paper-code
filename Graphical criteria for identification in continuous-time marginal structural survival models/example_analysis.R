@@ -105,22 +105,40 @@ boot_var = apply(BootMat,2,var)
 
 # Plot with bootstrapped confidence intervals
 
-plot(tms,1-analysis[1:tLen],type="s",xaxs="i",yaxs="i",xlim=c(0,4),ylim=c(0,0.085),xlab="Years",ylab="",main="Proportion CIN2+ detected")
-lines(tms,1-analysis[1:tLen] + 1.96 * sqrt(boot_var[1:tLen]),type="s",lty=2)
-lines(tms,1-analysis[1:tLen] - 1.96 * sqrt(boot_var[1:tLen]),type="s",lty=2)
-lines(tms,1-analysis[(tLen+1):(2*tLen)],type="s",col="gray")
-lines(tms,1-analysis[(tLen+1):(2*tLen)] + 1.96 * sqrt(boot_var[(tLen+1):(2*tLen)]),type="s",col="gray",lty=2)
-lines(tms,1-analysis[(tLen+1):(2*tLen)] - 1.96 * sqrt(boot_var[(tLen+1):(2*tLen)]),type="s",col="gray",lty=2)
-lines(tms,1-analysis[(2*tLen+1):(3*tLen)],type="s",lty=2)
-lines(tms,1-analysis[(2*tLen+1):(3*tLen)] + 1.96 * sqrt(boot_var[(2*tLen+1):(3*tLen)]),type="s",lty=2)
-lines(tms,1-analysis[(2*tLen+1):(3*tLen)] - 1.96 * sqrt(boot_var[(2*tLen+1):(3*tLen)]),type="s",lty=2)
-legend("topleft",c("Proofer-group actual follow-up","Proofer-group follow-up as DNA","DNA-group actual follow-up"),
-       lty=c(1,2,1),col=c(1,1,"gray"),bty="n")
+# create the plot with shaded polygon regions
+plot(tms, 1 - analysis[1:tLen], type = "n", xaxs = "i", yaxs = "i",
+     xlim = c(0, 4), ylim = c(0, 0.085), xlab = "Years", ylab = "",
+     main = "Proportion CIN2+ detected")
+
+# add shaded polygon regions with opaque colors
+polygon(c(tms, rev(tms)), c(1 - analysis[1:tLen] + 1.96 * sqrt(boot_var[1:tLen]),
+                            rev(1 - analysis[1:tLen] - 1.96 * sqrt(boot_var[1:tLen]))),
+        col = rgb(51/255, 102/255, 153/255, alpha = 0.5), border = NA)
+polygon(c(tms, rev(tms)), c(1 - analysis[(tLen + 1):(2 * tLen)] + 1.96 * sqrt(boot_var[(tLen + 1):(2 * tLen)]),
+                            rev(1 - analysis[(tLen + 1):(2 * tLen)] - 1.96 * sqrt(boot_var[(tLen + 1):(2 * tLen)]))),
+        col = rgb(204/255, 229/255, 255/255, alpha = 0.5), border = NA)
+polygon(c(tms, rev(tms)), c(1 - analysis[(2 * tLen + 1):(3 * tLen)] + 1.96 * sqrt(boot_var[(2 * tLen + 1):(3 * tLen)]),
+                            rev(1 - analysis[(2 * tLen + 1):(3 * tLen)] - 1.96 * sqrt(boot_var[(2 * tLen + 1):(3 * tLen)]))),
+        col = rgb(204/255, 255/255, 204/255, alpha = 0.5), border = NA)
+
+lines(tms,1-analysis[1:tLen],type="s",col="#1F77B4",lwd=2)
+lines(tms,1-analysis[(tLen+1):(2*tLen)],type="s",col="#AEC7E8",lwd=2)
+lines(tms,1-analysis[(2*tLen+1):(3*tLen)],type="s",col="green",lwd=2)
+
+# add legend
+legend("topleft", c("Proofer-group actual follow-up", "Proofer-group follow-up as DNA", "DNA-group actual follow-up"),
+       lty = c(1, 2, 1), col = c(rgb(51/255, 102/255, 153/255, alpha = 0.5),
+                                 rgb(204/255, 229/255, 255/255, alpha = 0.5),
+                                 rgb(204/255, 255/255, 204/255, alpha = 0.5)),lwd=2,
+       bty = "n")
 
 
-plot(tms, analysis[(3*tLen+1):(4*tLen)],main="Difference with subsequent testing regime as DNA group",type='s',ylim=c(-0.005,0.035))
-lines(tms, analysis[(3*tLen+1):(4*tLen)] + 1.96 * sqrt(boot_var[(3*tLen+1):(4*tLen)]) ,lty=2)
-lines(tms, analysis[(3*tLen+1):(4*tLen)] - 1.96 * sqrt(boot_var[(3*tLen+1):(4*tLen)]) ,lty=2)
 
+
+x <- c(tms, rev(tms))
+y <- c(analysis[(3*tLen+1):(4*tLen)] + 1.96 * sqrt(boot_var[(3*tLen+1):(4*tLen)]), rev(analysis[(3*tLen+1):(4*tLen)] - 1.96 * sqrt(boot_var[(3*tLen+1):(4*tLen)])))
+plot(tms, analysis[(3*tLen+1):(4*tLen)], main="Difference with subsequent testing regime as DNA group", type='s', ylim=c(-0.005,0.035),
+     col="blue",lwd=2)
+polygon(x, y, col = rgb(204/255, 229/255, 255/255, alpha = 0.5), border=NA)
 
 
