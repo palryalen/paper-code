@@ -1,6 +1,6 @@
 library(data.table)
 library(timereg)
-devtools::install_github("palryalen/ahw")
+# install.packages("ahw")
 library(ahw)
 
 load("sim_data.RData")
