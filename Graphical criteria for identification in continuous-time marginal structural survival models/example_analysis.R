@@ -5,8 +5,6 @@ library(ahw)
 
 load("sim_data.RData")
 
-
-
 tms = seq(0,5,length.out = 1e3)
 
 
@@ -14,14 +12,14 @@ makeAnalysis = function(dta,BootWeights=rep(1,nrow(dta)),willPlot=F){
   
   dta$btWeights = BootWeights
   # Fitting aalen regressions for time-to-follow-up for the factual (RNA) and the hypothetical (DNA) scenarios
-  faFit <- aalen(Surv(from,to,to.state == "follow-up")~1,data=dta[dta$technology == "RNA" & dta$from.state == "none",], 
-                 weights = dta[dta$technology == "RNA" & dta$from.state == "none",]$btWeights )
-  cfaFit <- aalen(Surv(from,to,to.state == "follow-up")~1,data=dta[dta$technology == "DNA" & dta$from.state == "none",],
-                  weights = dta[dta$technology == "DNA" & dta$from.state == "none",]$btWeights)
+  faFit <- aalen(Surv(from,to,to.state == "follow-up")~1,data=dta[dta$technology == "RNA" & dta$from.state == "",], 
+                 weights = dta[dta$technology == "RNA" & dta$from.state == "",]$btWeights )
+  cfaFit <- aalen(Surv(from,to,to.state == "follow-up")~1,data=dta[dta$technology == "DNA" & dta$from.state == "",],
+                  weights = dta[dta$technology == "DNA" & dta$from.state == "",]$btWeights)
   
   
   # Calculating weights for the RNA/Proofer group and plotting the weight trajectories. See documentation using example(makeContWeights). 
-  frame <- makeContWeights(faFit,cfaFit,dta[dta$technology == "RNA",],"none","follow-up","from","to",
+  frame <- makeContWeights(faFit,cfaFit,dta[dta$technology == "RNA",],"","follow-up","from","to",
                            "from.state","to.state","id",0.1082,willPlotWeights = willPlot)
   
   
@@ -61,11 +59,10 @@ tLen = length(tms)
 plot(tms,1-analysis[1:tLen],type="s",xaxs="i",yaxs="i",xlim=c(0,4),ylim=c(0,0.085),xlab="Years",ylab="",main="Proportion CIN2+ detected")
 lines(tms,1-analysis[(tLen+1):(2*tLen)],type="s",col="gray")
 lines(tms,1-analysis[(2*tLen+1):(3*tLen)],type="s",lty=2)
-legend("topleft",c("Proofer-group actual follow-up","Proofer-group follow-up as DNA","DNA-group actual follow-up"),
-       lty=c(1,2,1),col=c(1,1,"gray"),bty="n")
+legend("topleft",c("Proofer-group actual follow-up","Proofer-group follow-up as DNA","DNA-group actual follow-up"), lty=c(1,2,1),col=c(1,1,"gray"),bty="n")
 
 
-plot(tms, analysis[(3*tLen+1):(4*tLen)],main="Difference with subsequent testing regime as DNA group",type='s',ylim=c(-0.005,0.03))
+plot(tms, analysis[(3*tLen+1):(4*tLen)],main="Difference with subsequent testing regime as DNA group",type='s',ylim=c(-0.005,0.03),ylab="",xlab="years")
 
 
 
@@ -140,5 +137,4 @@ y <- c(analysis[(3*tLen+1):(4*tLen)] + 1.96 * sqrt(boot_var[(3*tLen+1):(4*tLen)]
 plot(tms, analysis[(3*tLen+1):(4*tLen)], main="Difference with subsequent testing regime as DNA group", type='s', ylim=c(-0.005,0.035),
      col="blue",lwd=2)
 polygon(x, y, col = rgb(204/255, 229/255, 255/255, alpha = 0.5), border=NA)
-
 
